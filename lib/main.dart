@@ -10,6 +10,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       home: ColorPickerPage(),
+      debugShowCheckedModeBanner: false, // Eliminacion de banner
     );
   }
 }
@@ -26,7 +27,7 @@ class _ColorPickerPageState extends State<ColorPickerPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Color Picker'),
+        title: Text('Color ControLED'),
       ),
       body: Center(
         child: ColorWheel(
@@ -79,18 +80,38 @@ class ColorWheel extends StatelessWidget {
                 ),
               ),
             ),
-            Container(
-              width: selectedCircleSize,
-              height: selectedCircleSize,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: selectedColor,
+            Positioned(
+              child: Container(
+                width: selectedCircleSize,
+                height: selectedCircleSize,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: selectedColor,
+                ),
+              ),
+            ),
+            Positioned(
+              child: Container(
+                padding: EdgeInsets.all(8),
+                child: Text(
+                  '${selectedColor.toHex()}',
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
               ),
             ),
           ],
         );
       },
     );
+  }
+}
+
+extension ColorExtension on Color {
+  String toHex() {
+    return '#${value.toRadixString(16).substring(2, 8)}';
   }
 }
 
