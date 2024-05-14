@@ -34,13 +34,24 @@ class _ColorPickerPageState extends State<ColorPickerPage> {
         centerTitle: true, // Centrar el título
       ),
       body: Center(
-        child: ColorWheel(
-          onColorSelected: (color) {
-            setState(() {
-              selectedColor = color;
-            });
-          },
-          selectedColor: selectedColor,
+        child: Column(
+          crossAxisAlignment:
+              CrossAxisAlignment.center, // Alinear al centro horizontal
+          children: [
+            SizedBox(
+                height:
+                    30), // Espacio entre la parte superior de la pantalla y el selector de color
+            ColorWheel(
+              onColorSelected: (color) {
+                setState(() {
+                  selectedColor = color;
+                });
+              },
+              selectedColor: selectedColor,
+            ),
+            SizedBox(
+                height: 10), // Espacio entre el selector de color y el texto
+          ],
         ),
       ),
     );
@@ -60,43 +71,40 @@ class ColorWheel extends StatelessWidget {
         double wheelSize = constraints.maxWidth * 0.8;
         double selectedCircleSize = wheelSize * 0.5;
 
-        return Stack(
-          alignment: Alignment.center,
-          children: [
-            Container(
-              width: wheelSize,
-              height: wheelSize,
-              child: GestureDetector(
-                onPanUpdate: (details) {
-                  RenderBox renderBox = context.findRenderObject() as RenderBox;
-                  var localPosition =
-                      renderBox.globalToLocal(details.globalPosition);
-                  var dx = localPosition.dx - wheelSize / 2;
-                  var dy = localPosition.dy - wheelSize / 2;
-                  var angle = atan2(dy, dx);
-                  var hue = angle < 0 ? angle / (2 * pi) + 1 : angle / (2 * pi);
-                  var color =
-                      HSVColor.fromAHSV(1.0, hue * 360, 1.0, 1.0).toColor();
-                  onColorSelected(color);
-                },
-                child: CustomPaint(
-                  painter: ColorWheelPainter(selectedColor: selectedColor),
+        return GestureDetector(
+          onPanUpdate: (details) {
+            RenderBox renderBox = context.findRenderObject() as RenderBox;
+            var localPosition = renderBox.globalToLocal(details.globalPosition);
+            var dx = localPosition.dx - wheelSize / 2;
+            var dy = localPosition.dy - wheelSize / 2;
+            var angle = atan2(dy, dx);
+            var hue = angle < 0 ? angle / (2 * pi) + 1 : angle / (2 * pi);
+            var color = HSVColor.fromAHSV(1.0, hue * 360, 1.0, 1.0).toColor();
+            onColorSelected(color);
+          },
+          child: Stack(
+            alignment: Alignment.center,
+            children: [
+              CustomPaint(
+                size: Size(wheelSize, wheelSize),
+                painter: ColorWheelPainter(selectedColor: selectedColor),
+              ),
+              Positioned(
+                top: wheelSize / 2 -
+                    selectedCircleSize /
+                        2, // Centrar verticalmente el círculo de color
+                child: Container(
+                  width: selectedCircleSize,
+                  height: selectedCircleSize,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: selectedColor,
+                  ),
                 ),
               ),
-            ),
-            Positioned(
-              child: Container(
-                width: selectedCircleSize,
-                height: selectedCircleSize,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: selectedColor,
-                ),
-              ),
-            ),
-            Positioned(
-              child: Container(
-                padding: EdgeInsets.all(8),
+              Positioned(
+                top: wheelSize / 2 -
+                    selectedCircleSize / 20, // Centrar verticalmente el texto
                 child: Text(
                   '${selectedColor.toHex()}',
                   style: TextStyle(
@@ -105,8 +113,8 @@ class ColorWheel extends StatelessWidget {
                   ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         );
       },
     );
