@@ -85,7 +85,6 @@ class ColorWheel extends StatelessWidget {
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 color: selectedColor,
-                border: Border.all(color: Colors.black),
               ),
             ),
           ],
