@@ -27,7 +27,11 @@ class _ColorPickerPageState extends State<ColorPickerPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Color ControLED'),
+        title: Text(
+          'Color ControLED',
+          style: TextStyle(fontSize: 20),
+        ),
+        centerTitle: true, // Centrar el título
       ),
       body: Center(
         child: ColorWheel(
