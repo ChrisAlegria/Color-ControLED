@@ -1,56 +1,134 @@
 import 'package:flutter/material.dart';
-import 'dart:math';
+import 'package:flutter_circle_color_picker/flutter_circle_color_picker.dart';
 
 void main() {
-  runApp(MyApp());
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: ColorPickerPage(),
-      debugShowCheckedModeBanner: false, // Eliminacion de banner
+      title: 'Color Picker App',
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+      ),
+      home: const ColorPickerScreen(),
     );
   }
 }
 
-class ColorPickerPage extends StatefulWidget {
+class ColorPickerScreen extends StatefulWidget {
+  const ColorPickerScreen({super.key});
+
   @override
-  _ColorPickerPageState createState() => _ColorPickerPageState();
+  // ignore: library_private_types_in_public_api
+  _ColorPickerScreenState createState() => _ColorPickerScreenState();
 }
 
-class _ColorPickerPageState extends State<ColorPickerPage> {
-  Color selectedColor = Colors.white;
+class _ColorPickerScreenState extends State<ColorPickerScreen> {
+  // FlutterBlue flutterBlue = FlutterBlue.instance;
+  // BluetoothDevice? selectedDevice;
+
+  final _controller = CircleColorPickerController(
+    initialColor: Colors.blue,
+  );
+
+  Color selectedColor = Colors.blue; // Color inicial
+  double redValue = 0.0;
+  double greenValue = 0.0;
+  double blueValue = 255.0;
+
+  void connectToDevice() {
+    // Implementa la lógica de conexión Bluetooth aquí
+    // Escanea los dispositivos disponibles y conecta al deseado
+    // Configura las características para la comunicación
+  }
+
+  void sendColorToArduino(Color color) {
+    // Convierte el color a valores RGB
+    // int red = color.red;
+    // int green = color.green;
+    // int blue = color.blue;
+
+    // Envía los valores RGB al Arduino mediante Bluetooth
+    // Implementa tu protocolo de comunicación específico
+  }
+
+  void updateSelectedColor() {
+    // Calcula el color combinado usando los valores de los sliders
+    _controller.color = Color.fromARGB(
+        255, redValue.toInt(), greenValue.toInt(), blueValue.toInt());
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-          'Color ControLED',
-          style: TextStyle(fontSize: 20),
-        ),
-        centerTitle: true, // Centrar el título
+        title: const Text('Color Picker'),
       ),
       body: Center(
         child: Column(
-          crossAxisAlignment:
-              CrossAxisAlignment.center, // Alinear al centro horizontal
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            SizedBox(
-                height:
-                    30), // Espacio entre la parte superior de la pantalla y el selector de color
-            ColorWheel(
-              onColorSelected: (color) {
+            CircleColorPicker(
+              controller: _controller,
+              onChanged: (color) {
                 setState(() {
                   selectedColor = color;
+                  redValue = color.red.toDouble();
+                  greenValue = color.green.toDouble();
+                  blueValue = color.blue.toDouble();
                 });
               },
-              selectedColor: selectedColor,
             ),
-            SizedBox(
-                height: 10), // Espacio entre el selector de color y el texto
+            const SizedBox(height: 20),
+            Column(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                ColorSlider(
+                  label: 'Red',
+                  value: redValue,
+                  onChanged: (value) {
+                    setState(() {
+                      redValue = value;
+                      updateSelectedColor();
+                    });
+                  },
+                ),
+                ColorSlider(
+                  label: 'Green',
+                  value: greenValue,
+                  onChanged: (value) {
+                    setState(() {
+                      greenValue = value;
+                      updateSelectedColor();
+                    });
+                  },
+                ),
+                ColorSlider(
+                  label: 'Blue',
+                  value: blueValue,
+                  onChanged: (value) {
+                    setState(() {
+                      blueValue = value;
+                      updateSelectedColor();
+                    });
+                  },
+                ),
+              ],
+            ),
+            const SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: () {
+                connectToDevice(); // Conecta al Arduino
+                sendColorToArduino(
+                    selectedColor); // Envía el color seleccionado
+              },
+              child: const Text('Enviar color al Arduino'),
+            ),
           ],
         ),
       ),
@@ -58,113 +136,31 @@ class _ColorPickerPageState extends State<ColorPickerPage> {
   }
 }
 
-class ColorWheel extends StatelessWidget {
-  final Function(Color) onColorSelected;
-  final Color selectedColor;
+class ColorSlider extends StatelessWidget {
+  final String label;
+  final double value;
+  final ValueChanged<double> onChanged;
 
-  ColorWheel({required this.onColorSelected, required this.selectedColor});
+  const ColorSlider({
+    super.key,
+    required this.label,
+    required this.value,
+    required this.onChanged,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        double wheelSize = constraints.maxWidth * 0.8;
-        double selectedCircleSize = wheelSize * 0.5;
-
-        return GestureDetector(
-          onPanUpdate: (details) {
-            RenderBox renderBox = context.findRenderObject() as RenderBox;
-            var localPosition = renderBox.globalToLocal(details.globalPosition);
-            var dx = localPosition.dx - wheelSize / 2;
-            var dy = localPosition.dy - wheelSize / 2;
-            var angle = atan2(dy, dx);
-            var hue = angle < 0 ? angle / (2 * pi) + 1 : angle / (2 * pi);
-            var color = HSVColor.fromAHSV(1.0, hue * 360, 1.0, 1.0).toColor();
-            onColorSelected(color);
-          },
-          child: Stack(
-            alignment: Alignment.center,
-            children: [
-              CustomPaint(
-                size: Size(wheelSize, wheelSize),
-                painter: ColorWheelPainter(selectedColor: selectedColor),
-              ),
-              Positioned(
-                top: wheelSize / 2 -
-                    selectedCircleSize /
-                        2, // Centrar verticalmente el círculo de color
-                child: Container(
-                  width: selectedCircleSize,
-                  height: selectedCircleSize,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: selectedColor,
-                  ),
-                ),
-              ),
-              Positioned(
-                top: wheelSize / 2 -
-                    selectedCircleSize / 20, // Centrar verticalmente el texto
-                child: Text(
-                  '${selectedColor.toHex()}',
-                  style: TextStyle(
-                    color: Colors.black,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-            ],
-          ),
-        );
-      },
+    return Column(
+      children: [
+        Text(label),
+        Slider(
+          value: value,
+          onChanged: onChanged,
+          min: 0,
+          max: 255,
+          divisions: 255,
+        ),
+      ],
     );
-  }
-}
-
-extension ColorExtension on Color {
-  String toHex() {
-    return '#${value.toRadixString(16).substring(2, 8)}';
-  }
-}
-
-class ColorWheelPainter extends CustomPainter {
-  final Color selectedColor;
-
-  ColorWheelPainter({required this.selectedColor});
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final double strokeWidth = 4.0;
-    final double radius = size.width / 2;
-    final double centerX = size.width / 2;
-    final double centerY = size.height / 2;
-
-    for (int i = 0; i < 360; i++) {
-      final double hue = i.toDouble();
-      final Paint paint = Paint()
-        ..color = HSVColor.fromAHSV(1.0, hue, 1.0, 1.0).toColor()
-        ..strokeWidth = strokeWidth
-        ..strokeCap = StrokeCap.round;
-
-      final double x1 =
-          centerX + (radius - strokeWidth / 2) * cos(i * pi / 180);
-      final double y1 =
-          centerY + (radius - strokeWidth / 2) * sin(i * pi / 180);
-      final double x2 =
-          centerX + (radius + strokeWidth / 2) * cos(i * pi / 180);
-      final double y2 =
-          centerY + (radius + strokeWidth / 2) * sin(i * pi / 180);
-
-      canvas.drawLine(
-        Offset(x1, y1),
-        Offset(x2, y2),
-        paint,
-      );
-    }
-  }
-
-  @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) {
-    return false;
   }
 }
