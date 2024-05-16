@@ -6,7 +6,7 @@ void main() {
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  const MyApp({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -16,28 +16,24 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
       ),
       home: const ColorPickerScreen(),
-      debugShowCheckedModeBanner: false, // Quitar el banner de depuración
+      debugShowCheckedModeBanner: false,
     );
   }
 }
 
 class ColorPickerScreen extends StatefulWidget {
-  const ColorPickerScreen({super.key});
+  const ColorPickerScreen({Key? key}) : super(key: key);
 
   @override
-  // ignore: library_private_types_in_public_api
   _ColorPickerScreenState createState() => _ColorPickerScreenState();
 }
 
 class _ColorPickerScreenState extends State<ColorPickerScreen> {
-  // FlutterBlue flutterBlue = FlutterBlue.instance;
-  // BluetoothDevice? selectedDevice;
-
   final _controller = CircleColorPickerController(
     initialColor: Colors.blue,
   );
 
-  Color selectedColor = Colors.blue; // Color inicial
+  Color selectedColor = Colors.blue;
   double redValue = 0.0;
   double greenValue = 0.0;
   double blueValue = 255.0;
@@ -48,20 +44,53 @@ class _ColorPickerScreenState extends State<ColorPickerScreen> {
     // Configura las características para la comunicación
   }
 
-  void sendColorToArduino(Color color) {
-    // Convierte el color a valores RGB
-    // int red = color.red;
-    // int green = color.green;
-    // int blue = color.blue;
-
-    // Envía los valores RGB al Arduino mediante Bluetooth
-    // Implementa tu protocolo de comunicación específico
+  bool sendColorToArduino(Color color) {
+    try {
+      // Convierte el color a valores RGB y envía los valores al Arduino mediante Bluetooth
+      // Implementa tu protocolo de comunicación específico
+      // Supongamos que esta función devuelve true si el envío fue exitoso y false en caso de error
+      return true;
+    } catch (e) {
+      // Manejo de errores
+      return false;
+    }
   }
 
   void updateSelectedColor() {
-    // Calcula el color combinado usando los valores de los sliders
     _controller.color = Color.fromARGB(
-        255, redValue.toInt(), greenValue.toInt(), blueValue.toInt());
+      255,
+      redValue.toInt(),
+      greenValue.toInt(),
+      blueValue.toInt(),
+    );
+  }
+
+  String getColorName(Color color) {
+    if (color == Colors.red) return "Rojo";
+    if (color == Colors.green) return "Verde";
+    if (color == Colors.blue) return "Azul";
+    // Agrega más colores si es necesario
+    return "personalizado";
+  }
+
+  void showMessageDialog(BuildContext context, String title, String message) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(title),
+          content: Text(message),
+          actions: <Widget>[
+            TextButton(
+              child: const Text("Aceptar"),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 
   @override
@@ -71,7 +100,7 @@ class _ColorPickerScreenState extends State<ColorPickerScreen> {
         title: const Center(
           child: Text(
             'Color ControLED',
-            style: TextStyle(fontSize: 18), // Reducir el tamaño del título
+            style: TextStyle(fontSize: 18),
           ),
         ),
       ),
@@ -108,7 +137,7 @@ class _ColorPickerScreenState extends State<ColorPickerScreen> {
                 ColorSlider(
                   label: 'Green',
                   value: greenValue,
-                  activeColor: Colors.greenAccent,
+                  activeColor: Colors.green,
                   onChanged: (value) {
                     setState(() {
                       greenValue = value;
@@ -132,9 +161,22 @@ class _ColorPickerScreenState extends State<ColorPickerScreen> {
             const SizedBox(height: 20),
             ElevatedButton(
               onPressed: () {
-                connectToDevice(); // Conecta al Arduino
-                sendColorToArduino(
-                    selectedColor); // Envía el color seleccionado
+                connectToDevice();
+                bool success = sendColorToArduino(selectedColor);
+
+                if (success) {
+                  String colorName = getColorName(selectedColor);
+                  String colorHex =
+                      '#${selectedColor.value.toRadixString(16).substring(2).toUpperCase()}';
+                  showMessageDialog(
+                    context,
+                    "Color Enviado",
+                    "El color seleccionado es $colorHex y se está reproduciendo en el LED en este momento.",
+                  );
+                } else {
+                  showMessageDialog(context, "Error",
+                      "Error: No se ha podido encender el LED.");
+                }
               },
               child: const Text('Enviar color al Arduino'),
             ),
@@ -152,12 +194,12 @@ class ColorSlider extends StatelessWidget {
   final ValueChanged<double> onChanged;
 
   const ColorSlider({
-    super.key,
+    Key? key,
     required this.label,
     required this.value,
     required this.activeColor,
     required this.onChanged,
-  });
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
