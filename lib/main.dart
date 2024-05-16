@@ -97,6 +97,7 @@ class _ColorPickerScreenState extends State<ColorPickerScreen> {
                 ColorSlider(
                   label: 'Red',
                   value: redValue,
+                  activeColor: Colors.red,
                   onChanged: (value) {
                     setState(() {
                       redValue = value;
@@ -107,6 +108,7 @@ class _ColorPickerScreenState extends State<ColorPickerScreen> {
                 ColorSlider(
                   label: 'Green',
                   value: greenValue,
+                  activeColor: Colors.green,
                   onChanged: (value) {
                     setState(() {
                       greenValue = value;
@@ -117,6 +119,7 @@ class _ColorPickerScreenState extends State<ColorPickerScreen> {
                 ColorSlider(
                   label: 'Blue',
                   value: blueValue,
+                  activeColor: Colors.blue,
                   onChanged: (value) {
                     setState(() {
                       blueValue = value;
@@ -145,12 +148,14 @@ class _ColorPickerScreenState extends State<ColorPickerScreen> {
 class ColorSlider extends StatelessWidget {
   final String label;
   final double value;
+  final Color activeColor;
   final ValueChanged<double> onChanged;
 
   const ColorSlider({
     super.key,
     required this.label,
     required this.value,
+    required this.activeColor,
     required this.onChanged,
   });
 
@@ -161,6 +166,7 @@ class ColorSlider extends StatelessWidget {
         Text(label),
         Slider(
           value: value,
+          activeColor: activeColor,
           onChanged: onChanged,
           min: 0,
           max: 255,
