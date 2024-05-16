@@ -11,11 +11,12 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Color Picker App',
+      title: 'Color ControLED',
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
       home: const ColorPickerScreen(),
+      debugShowCheckedModeBanner: false, // Quitar el banner de depuración
     );
   }
 }
@@ -67,7 +68,12 @@ class _ColorPickerScreenState extends State<ColorPickerScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Color Picker'),
+        title: const Center(
+          child: Text(
+            'Color ControLED',
+            style: TextStyle(fontSize: 18), // Reducir el tamaño del título
+          ),
+        ),
       ),
       body: Center(
         child: Column(
