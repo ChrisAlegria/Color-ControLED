@@ -25,14 +25,10 @@ class ColorPickerScreen extends StatefulWidget {
   const ColorPickerScreen({super.key});
 
   @override
-  // ignore: library_private_types_in_public_api
   _ColorPickerScreenState createState() => _ColorPickerScreenState();
 }
 
 class _ColorPickerScreenState extends State<ColorPickerScreen> {
-  // FlutterBlue flutterBlue = FlutterBlue.instance;
-  // BluetoothDevice? selectedDevice;
-
   final _controller = CircleColorPickerController(
     initialColor: Colors.blue,
   );
@@ -44,22 +40,13 @@ class _ColorPickerScreenState extends State<ColorPickerScreen> {
 
   void connectToDevice() {
     // Implementa la lógica de conexión Bluetooth aquí
-    // Escanea los dispositivos disponibles y conecta al deseado
-    // Configura las características para la comunicación
   }
 
   void sendColorToArduino(Color color) {
-    // Convierte el color a valores RGB
-    // int red = color.red;
-    // int green = color.green;
-    // int blue = color.blue;
-
-    // Envía los valores RGB al Arduino mediante Bluetooth
-    // Implementa tu protocolo de comunicación específico
+    // Convierte el color a valores RGB y envía los valores al Arduino mediante Bluetooth
   }
 
   void updateSelectedColor() {
-    // Calcula el color combinado usando los valores de los sliders
     _controller.color = Color.fromARGB(
         255, redValue.toInt(), greenValue.toInt(), blueValue.toInt());
   }
@@ -79,16 +66,22 @@ class _ColorPickerScreenState extends State<ColorPickerScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            CircleColorPicker(
-              controller: _controller,
-              onChanged: (color) {
-                setState(() {
-                  selectedColor = color;
-                  redValue = color.red.toDouble();
-                  greenValue = color.green.toDouble();
-                  blueValue = color.blue.toDouble();
-                });
-              },
+            FittedBox(
+              child: SizedBox(
+                width: 300,
+                height: 300,
+                child: CircleColorPicker(
+                  controller: _controller,
+                  onChanged: (color) {
+                    setState(() {
+                      selectedColor = color;
+                      redValue = color.red.toDouble();
+                      greenValue = color.green.toDouble();
+                      blueValue = color.blue.toDouble();
+                    });
+                  },
+                ),
+              ),
             ),
             const SizedBox(height: 20),
             Column(
