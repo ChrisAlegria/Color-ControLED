@@ -108,7 +108,7 @@ class _ColorPickerScreenState extends State<ColorPickerScreen> {
                 ColorSlider(
                   label: 'Green',
                   value: greenValue,
-                  activeColor: Colors.green,
+                  activeColor: Colors.greenAccent,
                   onChanged: (value) {
                     setState(() {
                       greenValue = value;
