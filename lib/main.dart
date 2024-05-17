@@ -79,7 +79,13 @@ class _ColorPickerScreenState extends State<ColorPickerScreen> {
       builder: (BuildContext context) {
         return AlertDialog(
           title: Text(title),
-          content: Text(message),
+          content: Row(
+            children: [
+              _buildColorBox(selectedColor),
+              const SizedBox(width: 10),
+              Flexible(child: Text(message)),
+            ],
+          ),
           actions: <Widget>[
             TextButton(
               child: const Text("Aceptar"),
@@ -90,6 +96,17 @@ class _ColorPickerScreenState extends State<ColorPickerScreen> {
           ],
         );
       },
+    );
+  }
+
+  Widget _buildColorBox(Color color) {
+    return Container(
+      width: 20,
+      height: 20,
+      decoration: BoxDecoration(
+        color: color,
+        border: Border.all(color: Colors.black),
+      ),
     );
   }
 
@@ -171,7 +188,7 @@ class _ColorPickerScreenState extends State<ColorPickerScreen> {
                   showMessageDialog(
                     context,
                     "Color Enviado",
-                    "El color seleccionado es $colorHex y se está reproduciendo en el LED en este momento.",
+                    "El color seleccionado es $colorHex  y se está reproduciendo en el LED en este momento.",
                   );
                 } else {
                   showMessageDialog(context, "Error",
