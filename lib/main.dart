@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_blue/flutter_blue.dart';
 import 'color_picker_screen.dart';
-import 'bluetooth_status_screen.dart';
 import 'devices_screen.dart'; // Asegúrate de importar DevicesScreen
 
 void main() {
