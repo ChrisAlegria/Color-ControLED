@@ -107,6 +107,26 @@ class _DevicesScreenState extends State<DevicesScreen> {
       body: Column(
         children: [
           _controlBT(),
+          if (!_bluetoothState)
+            Expanded(
+              child: Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.bluetooth_disabled,
+                      size: 200.0,
+                      color: const Color.fromARGB(137, 48, 48, 48),
+                    ),
+                    const SizedBox(height: 16.0),
+                    Text(
+                      'Bluetooth Adapter is ${_bluetoothState ? 'enabled' : 'disabled'}.',
+                      style: const TextStyle(fontSize: 18.0),
+                    ),
+                  ],
+                ),
+              ),
+            ),
           if (_bluetoothState) ...[
             _infoDevice(),
             _scanDevicesButton(),
