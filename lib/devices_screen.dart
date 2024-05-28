@@ -14,29 +14,37 @@ class DevicesScreen extends StatefulWidget {
 
 class _DevicesScreenState extends State<DevicesScreen> {
   final _bluetooth = FlutterBluetoothSerial.instance;
-  final fb_blue.FlutterBlue _flutterBlue =
-      fb_blue.FlutterBlue.instance; // Instancia de FlutterBlue
+  final fb_blue.FlutterBlue _flutterBlue = fb_blue.FlutterBlue.instance;
   bool _bluetoothState = false;
   bool _isConnecting = false;
-  bool _showDevices =
-      false; // Variable para controlar la visibilidad de la lista de dispositivos
-  bool _isScanning =
-      false; // Variable para controlar el escaneo de dispositivos
-  bool _showScanResults =
-      false; // Variable para controlar la visibilidad de la lista de resultados del escaneo
+  bool _showDevices = false;
+  bool _isScanning = false;
+  bool _showScanResults = false;
   BluetoothConnection? _connection;
   List<BluetoothDevice> _devices = [];
-  List<fb_blue.ScanResult> _scanResults =
-      []; // Lista para almacenar los resultados del escaneo
+  List<fb_blue.ScanResult> _scanResults = [];
   BluetoothDevice? _deviceConnected;
   int times = 0;
 
-  void _getDevices() async {
+  @override
+  void initState() {
+    super.initState();
+    _requestPermission();
+    _bluetooth.state.then((state) {
+      setState(() => _bluetoothState = state.isEnabled);
+    });
+
+    _bluetooth.onStateChanged().listen((state) {
+      setState(() => _bluetoothState = state.isEnabled);
+    });
+  }
+
+  Future<void> _getDevices() async {
     var res = await _bluetooth.getBondedDevices();
     setState(() {
       _devices = res;
-      _showDevices = true; // Mostrar la lista de dispositivos
-      _showScanResults = false; // Ocultar la lista de resultados del escaneo
+      _showDevices = true;
+      _showScanResults = false;
     });
   }
 
@@ -45,16 +53,16 @@ class _DevicesScreenState extends State<DevicesScreen> {
       _flutterBlue.stopScan();
       setState(() {
         _isScanning = false;
-        _showScanResults = false; // Ocultar la lista de resultados del escaneo
+        _showScanResults = false;
       });
     } else {
-      _flutterBlue.startScan(timeout: Duration(seconds: 4));
+      _flutterBlue.startScan(timeout: const Duration(seconds: 4));
       _flutterBlue.scanResults.listen((results) {
         setState(() {
           _scanResults = results;
           _isScanning = true;
-          _showScanResults = true; // Mostrar la lista de resultados del escaneo
-          _showDevices = false; // Ocultar la lista de dispositivos emparejados
+          _showScanResults = true;
+          _showDevices = false;
         });
       });
     }
@@ -75,30 +83,12 @@ class _DevicesScreenState extends State<DevicesScreen> {
   }
 
   void _requestPermission() async {
-    await Permission.location.request();
-    await Permission.bluetooth.request();
-    await Permission.bluetoothScan.request();
-    await Permission.bluetoothConnect.request();
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    _requestPermission();
-    _bluetooth.state.then((state) {
-      setState(() => _bluetoothState = state.isEnabled);
-    });
-
-    _bluetooth.onStateChanged().listen((state) {
-      switch (state) {
-        case BluetoothState.STATE_OFF:
-          setState(() => _bluetoothState = false);
-          break;
-        case BluetoothState.STATE_ON:
-          setState(() => _bluetoothState = true);
-          break;
-      }
-    });
+    await [
+      Permission.location,
+      Permission.bluetooth,
+      Permission.bluetoothScan,
+      Permission.bluetoothConnect,
+    ].request();
   }
 
   @override
@@ -117,13 +107,16 @@ class _DevicesScreenState extends State<DevicesScreen> {
       body: Column(
         children: [
           _controlBT(),
-          _infoDevice(),
-          _scanDevicesButton(), // Agrega el botón de buscar dispositivos
-          Expanded(
+          if (_bluetoothState) ...[
+            _infoDevice(),
+            _scanDevicesButton(),
+            Expanded(
               child: _showDevices || _showScanResults
                   ? _listDevices()
-                  : SizedBox.shrink()),
-          _buttons(), // Mover los controles a la parte inferior
+                  : const SizedBox.shrink(),
+            ),
+            _buttons(),
+          ],
         ],
       ),
     );
@@ -158,7 +151,7 @@ class _DevicesScreenState extends State<DevicesScreen> {
                     await _connection?.finish();
                     setState(() {
                       _deviceConnected = null;
-                      _getDevices(); // Mostrar la lista de dispositivos al desconectar
+                      _getDevices();
                     });
                   },
                   child: const Text("Desconectar"),
@@ -167,19 +160,18 @@ class _DevicesScreenState extends State<DevicesScreen> {
                   onPressed: () {
                     if (_showDevices) {
                       setState(() {
-                        _showDevices =
-                            false; // Ocultar la lista de dispositivos
+                        _showDevices = false;
                       });
                     } else {
                       if (_isScanning) {
-                        _scanDevices(); // Detener la búsqueda si está activa
+                        _scanDevices();
                       }
-                      _getDevices(); // Mostrar la lista de dispositivos
+                      _getDevices();
                     }
                   },
                   child: Text(_showDevices
                       ? "Ocultar dispositivos"
-                      : "Ver dispositivos"), // Cambiar el texto según el estado
+                      : "Ver dispositivos"),
                 ),
         ),
       ],
@@ -190,18 +182,20 @@ class _DevicesScreenState extends State<DevicesScreen> {
     return ListTile(
       tileColor: Colors.black12,
       trailing: TextButton(
-        onPressed: () {
-          if (_isScanning) {
-            _scanDevices(); // Detener la búsqueda si está activa
-          } else {
-            if (_showDevices) {
-              setState(() {
-                _showDevices = false; // Ocultar la lista de dispositivos
-              });
-            }
-            _scanDevices(); // Iniciar la búsqueda
-          }
-        },
+        onPressed: _bluetoothState
+            ? () {
+                if (_isScanning) {
+                  _scanDevices();
+                } else {
+                  if (_showDevices) {
+                    setState(() {
+                      _showDevices = false;
+                    });
+                  }
+                  _scanDevices();
+                }
+              }
+            : null,
         child: Text(_isScanning ? "Detener búsqueda" : "Buscar dispositivos"),
       ),
     );
@@ -215,59 +209,58 @@ class _DevicesScreenState extends State<DevicesScreen> {
               color: Colors.grey.shade100,
               child: Column(
                 children: [
-                  if (_showDevices) ...[
-                    for (final device in _devices)
-                      ListTile(
-                        title: Text(device.name ?? device.address),
-                        trailing: TextButton(
-                          child: const Text('Conectar'),
-                          onPressed: () async {
-                            setState(() => _isConnecting = true);
+                  if (_showDevices)
+                    ..._devices.map((device) => ListTile(
+                          title: Text(device.name ?? device.address),
+                          trailing: TextButton(
+                            child: const Text('Conectar'),
+                            onPressed: _bluetoothState
+                                ? () async {
+                                    setState(() => _isConnecting = true);
 
-                            _connection = await BluetoothConnection.toAddress(
-                                device.address);
-                            _deviceConnected = device;
-                            _devices = [];
-                            _isConnecting = false;
+                                    _connection =
+                                        await BluetoothConnection.toAddress(
+                                            device.address);
+                                    _deviceConnected = device;
+                                    setState(() {
+                                      _devices = [];
+                                      _isConnecting = false;
+                                      _showDevices = false;
+                                    });
 
-                            _receiveData();
+                                    _receiveData();
+                                  }
+                                : null,
+                          ),
+                        )),
+                  if (_showScanResults)
+                    ..._scanResults.map((result) => ListTile(
+                          title: Text(result.device.name.isNotEmpty
+                              ? result.device.name
+                              : "Unknown Device"),
+                          subtitle: Text(result.device.id.toString()),
+                          trailing: TextButton(
+                            child: const Text('Conectar'),
+                            onPressed: _bluetoothState
+                                ? () async {
+                                    setState(() => _isConnecting = true);
 
-                            setState(() {
-                              _showDevices =
-                                  false; // Ocultar la lista de dispositivos al conectar
-                            });
-                          },
-                        ),
-                      ),
-                  ],
-                  if (_showScanResults) ...[
-                    for (final result in _scanResults)
-                      ListTile(
-                        title: Text(result.device.name.isNotEmpty
-                            ? result.device.name
-                            : "Unknown Device"),
-                        subtitle: Text(result.device.id.toString()),
-                        trailing: TextButton(
-                          child: const Text('Conectar'),
-                          onPressed: () async {
-                            setState(() => _isConnecting = true);
+                                    _connection =
+                                        await BluetoothConnection.toAddress(
+                                            result.device.id.toString());
+                                    _deviceConnected =
+                                        result.device as BluetoothDevice;
+                                    setState(() {
+                                      _scanResults = [];
+                                      _isConnecting = false;
+                                      _showScanResults = false;
+                                    });
 
-                            _connection = await BluetoothConnection.toAddress(
-                                result.device.id.toString());
-                            _deviceConnected = result.device as BluetoothDevice;
-                            _scanResults = [];
-                            _isConnecting = false;
-
-                            _receiveData();
-
-                            setState(() {
-                              _showScanResults =
-                                  false; // Ocultar la lista de resultados del escaneo al conectar
-                            });
-                          },
-                        ),
-                      ),
-                  ],
+                                    _receiveData();
+                                  }
+                                : null,
+                          ),
+                        )),
                 ],
               ),
             ),
@@ -288,7 +281,7 @@ class _DevicesScreenState extends State<DevicesScreen> {
                 child: ActionButton(
                   text: "Encender",
                   color: Colors.green,
-                  onTap: () => _sendData("1"),
+                  onTap: _bluetoothState ? () => _sendData("1") : null,
                 ),
               ),
               const SizedBox(width: 8.0),
@@ -296,7 +289,7 @@ class _DevicesScreenState extends State<DevicesScreen> {
                 child: ActionButton(
                   color: Colors.red,
                   text: "Apagar",
-                  onTap: () => _sendData("0"),
+                  onTap: _bluetoothState ? () => _sendData("0") : null,
                 ),
               ),
             ],
