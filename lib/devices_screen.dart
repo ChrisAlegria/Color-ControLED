@@ -23,17 +23,20 @@ class _DevicesScreenState extends State<DevicesScreen> {
   int times = 0;
 
   void _getDevices() async {
-    if (!_showDevices) {
-      var res = await _bluetooth.getBondedDevices();
-      setState(() {
-        _devices = res;
-        _showDevices = true; // Mostrar la lista de dispositivos
-      });
-    } else {
-      setState(() {
-        _showDevices = false; // Ocultar la lista de dispositivos
-      });
-    }
+    var res = await _bluetooth.getBondedDevices();
+    setState(() {
+      _devices = res;
+      _showDevices = true; // Mostrar la lista de dispositivos
+    });
+  }
+
+  void _toggleDeviceList() {
+    setState(() {
+      _showDevices = !_showDevices;
+      if (_showDevices) {
+        _getDevices();
+      }
+    });
   }
 
   void _receiveData() {
@@ -126,12 +129,15 @@ class _DevicesScreenState extends State<DevicesScreen> {
           ? TextButton(
               onPressed: () async {
                 await _connection?.finish();
-                setState(() => _deviceConnected = null);
+                setState(() {
+                  _deviceConnected = null;
+                  _getDevices(); // Mostrar la lista de dispositivos al desconectar
+                });
               },
               child: const Text("Desconectar"),
             )
           : TextButton(
-              onPressed: _getDevices,
+              onPressed: _toggleDeviceList,
               child: Text(_showDevices
                   ? "Ocultar dispositivos"
                   : "Ver dispositivos"), // Cambiar el texto según el estado
@@ -163,7 +169,10 @@ class _DevicesScreenState extends State<DevicesScreen> {
 
                           _receiveData();
 
-                          setState(() {});
+                          setState(() {
+                            _showDevices =
+                                false; // Ocultar la lista de dispositivos al conectar
+                          });
                         },
                       ),
                     )
