@@ -15,14 +15,25 @@ class _DevicesScreenState extends State<DevicesScreen> {
   final _bluetooth = FlutterBluetoothSerial.instance;
   bool _bluetoothState = false;
   bool _isConnecting = false;
+  bool _showDevices =
+      false; // Variable para controlar la visibilidad de la lista de dispositivos
   BluetoothConnection? _connection;
   List<BluetoothDevice> _devices = [];
   BluetoothDevice? _deviceConnected;
   int times = 0;
 
   void _getDevices() async {
-    var res = await _bluetooth.getBondedDevices();
-    setState(() => _devices = res);
+    if (!_showDevices) {
+      var res = await _bluetooth.getBondedDevices();
+      setState(() {
+        _devices = res;
+        _showDevices = true; // Mostrar la lista de dispositivos
+      });
+    } else {
+      setState(() {
+        _showDevices = false; // Ocultar la lista de dispositivos
+      });
+    }
   }
 
   void _receiveData() {
@@ -83,8 +94,8 @@ class _DevicesScreenState extends State<DevicesScreen> {
         children: [
           _controlBT(),
           _infoDevice(),
-          Expanded(child: _listDevices()),
-          _buttons(),
+          Expanded(child: _showDevices ? _listDevices() : SizedBox.shrink()),
+          _buttons(), // Mover los controles a la parte inferior
         ],
       ),
     );
@@ -121,7 +132,9 @@ class _DevicesScreenState extends State<DevicesScreen> {
             )
           : TextButton(
               onPressed: _getDevices,
-              child: const Text("Ver dispositivos"),
+              child: Text(_showDevices
+                  ? "Ocultar dispositivos"
+                  : "Ver dispositivos"), // Cambiar el texto según el estado
             ),
     );
   }
