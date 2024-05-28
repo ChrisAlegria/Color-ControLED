@@ -92,7 +92,7 @@ class _MainPageState extends State<MainPage> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                      builder: (context) => const BluetoothStatusScreen()),
+                      builder: (context) => const FlutterBlueApp()),
                 );
               },
               child: const Text('Conectar Bluetooth'),

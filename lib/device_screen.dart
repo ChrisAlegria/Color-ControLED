@@ -13,12 +13,14 @@ class DeviceScreen extends StatelessWidget {
                 ListTile(
                   title: const Text("OFF"),
                   onTap: () {
+                    // print(e.characteristics);
                     e.characteristics[0].write([0]);
                   },
                 ),
                 ListTile(
                   title: const Text("ON"),
                   onTap: () {
+                    // print(e.characteristics);
                     e.characteristics[0].write([1]);
                   },
                 ),
@@ -91,11 +93,11 @@ class DeviceScreen extends StatelessWidget {
                       ),
                       const IconButton(
                         icon: SizedBox(
+                          width: 18.0,
+                          height: 18.0,
                           child: CircularProgressIndicator(
                             valueColor: AlwaysStoppedAnimation(Colors.grey),
                           ),
-                          width: 18.0,
-                          height: 18.0,
                         ),
                         onPressed: null,
                       )
