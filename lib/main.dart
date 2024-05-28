@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_blue/flutter_blue.dart';
 import 'color_picker_screen.dart';
-import 'package:color_control_led/bluetooth_status_screen.dart';
+import 'bluetooth_status_screen.dart';
+import 'devices_screen.dart'; // Asegúrate de importar DevicesScreen
 
 void main() {
   runApp(const MyApp());
@@ -92,7 +93,8 @@ class _MainPageState extends State<MainPage> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                      builder: (context) => const FlutterBlueApp()),
+                      builder: (context) =>
+                          const DevicesScreen()), // Navega a DevicesScreen
                 );
               },
               child: const Text('Conectar Bluetooth'),

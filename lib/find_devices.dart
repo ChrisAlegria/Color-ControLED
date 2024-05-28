@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_blue/flutter_blue.dart';
 
-class DeviceScreen extends StatelessWidget {
-  const DeviceScreen({Key? key, required this.device}) : super(key: key);
+class FindDevices extends StatelessWidget {
+  const FindDevices({Key? key, required this.device}) : super(key: key);
 
   final BluetoothDevice device;
 

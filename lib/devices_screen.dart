@@ -4,14 +4,14 @@ import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart';
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
 
-class MainPage extends StatefulWidget {
-  const MainPage({super.key});
+class DevicesScreen extends StatefulWidget {
+  const DevicesScreen({super.key});
 
   @override
-  State<MainPage> createState() => _MainPageState();
+  State<DevicesScreen> createState() => _DevicesScreenState();
 }
 
-class _MainPageState extends State<MainPage> {
+class _DevicesScreenState extends State<DevicesScreen> {
   final _bluetooth = FlutterBluetoothSerial.instance;
   bool _bluetoothState = false;
   bool _isConnecting = false;
@@ -49,9 +49,7 @@ class _MainPageState extends State<MainPage> {
   @override
   void initState() {
     super.initState();
-
     _requestPermission();
-
     _bluetooth.state.then((state) {
       setState(() => _bluetoothState = state.isEnabled);
     });
@@ -64,10 +62,6 @@ class _MainPageState extends State<MainPage> {
         case BluetoothState.STATE_ON:
           setState(() => _bluetoothState = true);
           break;
-        // case BluetoothState.STATE_TURNING_OFF:
-        //   break;
-        // case BluetoothState.STATE_TURNING_ON:
-        //   break;
       }
     });
   }
@@ -77,14 +71,19 @@ class _MainPageState extends State<MainPage> {
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
-        title: const Text('Flutter ❤️ Arduino'),
+        title: const Text('Conexión Bluetooth'),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
       ),
       body: Column(
         children: [
           _controlBT(),
           _infoDevice(),
           Expanded(child: _listDevices()),
-          _inputSerial(),
           _buttons(),
         ],
       ),
@@ -135,48 +134,30 @@ class _MainPageState extends State<MainPage> {
               color: Colors.grey.shade100,
               child: Column(
                 children: [
-                  ...[
-                    for (final device in _devices)
-                      ListTile(
-                        title: Text(device.name ?? device.address),
-                        trailing: TextButton(
-                          child: const Text('conectar'),
-                          onPressed: () async {
-                            setState(() => _isConnecting = true);
+                  for (final device in _devices)
+                    ListTile(
+                      title: Text(device.name ?? device.address),
+                      trailing: TextButton(
+                        child: const Text('Conectar'),
+                        onPressed: () async {
+                          setState(() => _isConnecting = true);
 
-                            _connection = await BluetoothConnection.toAddress(
-                                device.address);
-                            _deviceConnected = device;
-                            _devices = [];
-                            _isConnecting = false;
+                          _connection = await BluetoothConnection.toAddress(
+                              device.address);
+                          _deviceConnected = device;
+                          _devices = [];
+                          _isConnecting = false;
 
-                            _receiveData();
+                          _receiveData();
 
-                            setState(() {});
-                          },
-                        ),
-                      )
-                  ]
+                          setState(() {});
+                        },
+                      ),
+                    )
                 ],
               ),
             ),
           );
-  }
-
-  Widget _inputSerial() {
-    return ListTile(
-      trailing: TextButton(
-        child: const Text('reiniciar'),
-        onPressed: () => setState(() => times = 0),
-      ),
-      title: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 16.0),
-        child: Text(
-          "Pulsador presionado (x$times)",
-          style: const TextStyle(fontSize: 18.0),
-        ),
-      ),
-    );
   }
 
   Widget _buttons() {
