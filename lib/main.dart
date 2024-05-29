@@ -112,7 +112,7 @@ class _MainPageState extends State<MainPage> {
               padding: EdgeInsets.symmetric(horizontal: 16.0),
               child: Text(
                 'Con esta aplicación, podrás conectarte a un Arduino Uno con el cual podrás establecer una conexión vía Bluetooth. Además, dicho Arduino cuenta con un LED conectado mediante una protoboard. Con esta aplicación, podrás seleccionar un color y enviarlo al LED para que este lo reproduzca y visualizar diversos tipos de colores.',
-                style: TextStyle(fontSize: 16),
+                style: TextStyle(fontSize: 14),
                 textAlign: TextAlign.center,
               ),
             ),
