@@ -1,9 +1,10 @@
 import 'dart:convert';
 import 'package:color_control_led/widgets/action_button.dart';
-import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart';
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter_blue/flutter_blue.dart' as fb_blue;
+import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart'
+    as fb_serial;
 
 class DevicesScreen extends StatefulWidget {
   const DevicesScreen({super.key});
@@ -13,18 +14,26 @@ class DevicesScreen extends StatefulWidget {
 }
 
 class _DevicesScreenState extends State<DevicesScreen> {
-  final _bluetooth = FlutterBluetoothSerial.instance;
+  final fb_serial.FlutterBluetoothSerial _bluetooth =
+      fb_serial.FlutterBluetoothSerial.instance;
   final fb_blue.FlutterBlue _flutterBlue = fb_blue.FlutterBlue.instance;
   bool _bluetoothState = false;
   bool _isConnecting = false;
   bool _showDevices = false;
   bool _isScanning = false;
   bool _showScanResults = false;
-  BluetoothConnection? _connection;
-  List<BluetoothDevice> _devices = [];
+  fb_serial.BluetoothConnection? _connection;
+  List<fb_serial.BluetoothDevice> _devices = [];
   List<fb_blue.ScanResult> _scanResults = [];
-  BluetoothDevice? _deviceConnected;
+  fb_serial.BluetoothDevice? _deviceConnected;
   int times = 0;
+
+  void _showConnectedSnackBar(String deviceName) {
+    final snackBar = SnackBar(
+      content: Text('Conectado a $deviceName'),
+    );
+    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+  }
 
   @override
   void initState() {
@@ -100,7 +109,8 @@ class _DevicesScreenState extends State<DevicesScreen> {
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () {
-            Navigator.pop(context);
+            Navigator.pop(context,
+                {'device': _deviceConnected, 'connection': _connection});
           },
         ),
       ),
@@ -239,16 +249,19 @@ class _DevicesScreenState extends State<DevicesScreen> {
                                     setState(() => _isConnecting = true);
 
                                     _connection =
-                                        await BluetoothConnection.toAddress(
-                                            device.address);
+                                        await fb_serial.BluetoothConnection
+                                            .toAddress(device.address);
                                     _deviceConnected = device;
                                     setState(() {
-                                      _devices = [];
+                                      _scanResults = [];
                                       _isConnecting = false;
-                                      _showDevices = false;
+                                      _showScanResults = false;
                                     });
-
                                     _receiveData();
+                                    _showConnectedSnackBar(device.name ??
+                                        device.address); // Llama al método aquí
+
+                                    // No necesitas llamar a Navigator.pop() aquí
                                   }
                                 : null,
                           ),
@@ -265,11 +278,11 @@ class _DevicesScreenState extends State<DevicesScreen> {
                                 ? () async {
                                     setState(() => _isConnecting = true);
 
-                                    _connection =
-                                        await BluetoothConnection.toAddress(
-                                            result.device.id.toString());
-                                    _deviceConnected =
-                                        result.device as BluetoothDevice;
+                                    _connection = await fb_serial
+                                            .BluetoothConnection
+                                        .toAddress(result.device.id.toString());
+                                    _deviceConnected = result.device
+                                        as fb_serial.BluetoothDevice;
                                     setState(() {
                                       _scanResults = [];
                                       _isConnecting = false;
@@ -277,6 +290,10 @@ class _DevicesScreenState extends State<DevicesScreen> {
                                     });
 
                                     _receiveData();
+                                    Navigator.pop(context, {
+                                      'device': _deviceConnected,
+                                      'connection': _connection
+                                    });
                                   }
                                 : null,
                           ),
@@ -316,6 +333,26 @@ class _DevicesScreenState extends State<DevicesScreen> {
           ),
         ],
       ),
+    );
+  }
+
+  void _showConnectionDialog(BuildContext context, String message) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text("Conexión establecida"),
+          content: Text(message),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text("Aceptar"),
+            ),
+          ],
+        );
+      },
     );
   }
 }
