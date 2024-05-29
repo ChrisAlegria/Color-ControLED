@@ -38,10 +38,17 @@ class _ColorPickerScreenState extends State<ColorPickerScreen> {
   double greenValue = 0.0;
   double blueValue = 255.0;
 
+  String _connectionStatusMessage = 'No hay dispositivos conectados';
+
   void connectToDevice() {
     // Implementa la lógica de conexión Bluetooth aquí
     // Escanea los dispositivos disponibles y conecta al deseado
     // Configura las características para la comunicación
+    // Actualiza el mensaje de estado de la conexión
+    setState(() {
+      _connectionStatusMessage =
+          'Conectado a: DispositivoX'; // Actualiza con el nombre del dispositivo conectado
+    });
   }
 
   bool sendColorToArduino(Color color) {
@@ -198,6 +205,18 @@ class _ColorPickerScreenState extends State<ColorPickerScreen> {
               child: const Text('Enviar color al Arduino'),
             ),
           ],
+        ),
+      ),
+      bottomSheet: SizedBox(
+        height: 50,
+        child: Container(
+          color: Colors.grey[300],
+          child: Center(
+            child: Text(
+              _connectionStatusMessage,
+              style: const TextStyle(fontSize: 16),
+            ),
+          ),
         ),
       ),
     );
