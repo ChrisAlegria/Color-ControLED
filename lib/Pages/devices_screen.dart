@@ -326,18 +326,26 @@ class _DevicesScreenState extends State<DevicesScreen> {
     }
 
     return Container(
-      padding: const EdgeInsets.symmetric(vertical: 24.0, horizontal: 8.0),
+      width: double.infinity,
+      color: Colors.grey.shade300,
+      padding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 8.0),
       child: Column(
         children: [
-          const SizedBox(height: 60.0),
-          IconButton(
-            icon: const Icon(Icons.power_settings_new),
-            color: _buttonColor,
-            iconSize: 100.0,
-            hoverColor: Colors.green,
-            onPressed: _toggleState,
+          Container(
+            width: 60.0, // Ancho del contenedor
+            height: 60.0, // Alto del contenedor
+            decoration: BoxDecoration(
+              shape: BoxShape.circle, // Forma circular
+              color: Colors.white, // Fondo blanco para el icono
+            ),
+            child: IconButton(
+              icon: const Icon(Icons.power_settings_new),
+              color: _buttonColor,
+              iconSize: 40.0, // Tamaño del icono más pequeño
+              onPressed: _toggleState,
+            ),
           ),
-          const SizedBox(height: 8.0),
+          const SizedBox(height: 4.0),
           Text(
             _buttonText,
             style: TextStyle(fontSize: 18.0),
