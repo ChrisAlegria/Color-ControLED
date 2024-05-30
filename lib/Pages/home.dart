@@ -4,7 +4,7 @@ import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart'
     as fb_serial;
 import 'package:color_control_led/Pages/color_picker_screen.dart';
 import 'package:color_control_led/Pages/devices_screen.dart';
-import 'package:color_control_led/Pages/bluetooth_connection_manager.dart';
+import 'package:color_control_led/Connections/bluetooth_connection_manager.dart';
 
 class BluetoothConnectionProvider extends StatefulWidget {
   final Widget child;
