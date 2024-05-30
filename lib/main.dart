@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_blue/flutter_blue.dart' as fb_blue;
 import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart'
     as fb_serial;
-import 'color_picker_screen.dart';
-import 'devices_screen.dart';
-import 'bluetooth_connection_manager.dart';
+import 'Pages/color_picker_screen.dart';
+import 'package:color_control_led/Pages/devices_screen.dart';
+import 'package:color_control_led/Pages/bluetooth_connection_manager.dart';
 
 void main() {
   runApp(const MyApp());

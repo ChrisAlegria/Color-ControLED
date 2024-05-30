@@ -1,16 +1,17 @@
-import 'dart:convert';
-import 'package:color_control_led/widgets/action_button.dart';
 import 'package:flutter/material.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter_blue/flutter_blue.dart' as fb_blue;
 import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart'
     as fb_serial;
+import 'package:permission_handler/permission_handler.dart';
+import 'bluetooth_connection_manager.dart';
+import 'package:color_control_led/widgets/action_button.dart';
+import 'dart:convert';
 
 class DevicesScreen extends StatefulWidget {
-  const DevicesScreen({super.key});
+  const DevicesScreen({Key? key}) : super(key: key);
 
   @override
-  State<DevicesScreen> createState() => _DevicesScreenState();
+  _DevicesScreenState createState() => _DevicesScreenState();
 }
 
 class _DevicesScreenState extends State<DevicesScreen> {
@@ -130,7 +131,7 @@ class _DevicesScreenState extends State<DevicesScreen> {
                     ),
                     const SizedBox(height: 16.0),
                     Text(
-                      'Bluetooth Adapter is ${_bluetoothState ? 'enabled' : 'disabled'}.',
+                      'El Bluetooth se encuentra ${_bluetoothState ? 'abilitado' : 'desabilitado'}.',
                       style: const TextStyle(fontSize: 18.0),
                     ),
                   ],
