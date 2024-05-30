@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_blue/flutter_blue.dart' as fb_blue;
 import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart'
     as fb_serial;
-import 'package:permission_handler/permission_handler.dart';
-import '../Connections/bluetooth_connection.dart';
-import 'package:color_control_led/widgets/action_button.dart';
+import 'package:flutter_blue/flutter_blue.dart' as fb_blue;
 import 'dart:convert';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:color_control_led/Connections/bluetooth_connection.dart';
+import 'package:color_control_led/widgets/action_button.dart';
 
 class DevicesScreen extends StatefulWidget {
   const DevicesScreen({Key? key}) : super(key: key);
@@ -28,13 +28,6 @@ class _DevicesScreenState extends State<DevicesScreen> {
   List<fb_blue.ScanResult> _scanResults = [];
   fb_serial.BluetoothDevice? _deviceConnected;
   int times = 0;
-
-  void _showConnectedSnackBar(String deviceName) {
-    final snackBar = SnackBar(
-      content: Text('Conectado a $deviceName'),
-    );
-    ScaffoldMessenger.of(context).showSnackBar(snackBar);
-  }
 
   @override
   void initState() {
@@ -101,6 +94,13 @@ class _DevicesScreenState extends State<DevicesScreen> {
     ].request();
   }
 
+  void _showConnectedSnackBar(String deviceName) {
+    final snackBar = SnackBar(
+      content: Text('Conectado a $deviceName'),
+    );
+    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -131,7 +131,7 @@ class _DevicesScreenState extends State<DevicesScreen> {
                     ),
                     const SizedBox(height: 16.0),
                     Text(
-                      'El Bluetooth se encuentra ${_bluetoothState ? 'abilitado' : 'desabilitado'}.',
+                      'El Bluetooth se encuentra ${_bluetoothState ? 'habilitado' : 'deshabilitado'}.',
                       style: const TextStyle(fontSize: 18.0),
                     ),
                   ],
@@ -146,7 +146,7 @@ class _DevicesScreenState extends State<DevicesScreen> {
                   ? _listDevices()
                   : const SizedBox.shrink(),
             ),
-            _buttons(),
+            _buttons(BluetoothConection())
           ],
         ],
       ),
@@ -259,10 +259,8 @@ class _DevicesScreenState extends State<DevicesScreen> {
                                       _showScanResults = false;
                                     });
                                     _receiveData();
-                                    _showConnectedSnackBar(device.name ??
-                                        device.address); // Llama al método aquí
-
-                                    // No necesitas llamar a Navigator.pop() aquí
+                                    _showConnectedSnackBar(
+                                        device.name ?? device.address);
                                   }
                                 : null,
                           ),
@@ -305,32 +303,44 @@ class _DevicesScreenState extends State<DevicesScreen> {
           );
   }
 
-  Widget _buttons() {
+  Widget _buttons(BluetoothConection bluetoothConnection) {
+    bool _isOn = false;
+    Color _buttonColor = Colors.red;
+    String _buttonText = 'OFF';
+
+    void _toggleState() {
+      setState(() {
+        _isOn = !_isOn;
+        _buttonColor = _isOn ? Colors.blue : Colors.red;
+        _buttonText = _isOn ? 'ON' : 'OFF';
+        // Envía el comando correspondiente al estado del botón
+        if (_isOn) {
+          bluetoothConnection
+              .sendColor(Colors.white); // Encender el dispositivo
+          _sendData("1"); // Envía el comando para encender el dispositivo
+        } else {
+          bluetoothConnection.sendColor(Colors.black); // Apagar el dispositivo
+          _sendData("0"); // Envía el comando para apagar el dispositivo
+        }
+      });
+    }
+
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 24.0, horizontal: 8.0),
-      color: Colors.black12,
       child: Column(
         children: [
-          const Text('Controles para LED', style: TextStyle(fontSize: 18.0)),
-          const SizedBox(height: 16.0),
-          Row(
-            children: [
-              Expanded(
-                child: ActionButton(
-                  text: "Encender",
-                  color: Colors.green,
-                  onTap: _bluetoothState ? () => _sendData("1") : null,
-                ),
-              ),
-              const SizedBox(width: 8.0),
-              Expanded(
-                child: ActionButton(
-                  color: Colors.red,
-                  text: "Apagar",
-                  onTap: _bluetoothState ? () => _sendData("0") : null,
-                ),
-              ),
-            ],
+          const SizedBox(height: 60.0),
+          IconButton(
+            icon: const Icon(Icons.power_settings_new),
+            color: _buttonColor,
+            iconSize: 100.0,
+            hoverColor: Colors.green,
+            onPressed: _toggleState,
+          ),
+          const SizedBox(height: 8.0),
+          Text(
+            _buttonText,
+            style: TextStyle(fontSize: 18.0),
           ),
         ],
       ),
@@ -349,7 +359,7 @@ class _DevicesScreenState extends State<DevicesScreen> {
               onPressed: () {
                 Navigator.of(context).pop();
               },
-              child: const Text("Aceptar"),
+              child: const Text("Cerrar"),
             ),
           ],
         );
