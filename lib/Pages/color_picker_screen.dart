@@ -234,15 +234,19 @@ class ColorSlider extends StatelessWidget {
       children: [
         Text(
           label,
-          style: const TextStyle(fontSize: 20.0),
+          style: const TextStyle(fontSize: 16.0), // Cambié el tamaño a 16
         ),
-        Slider(
-          value: value,
-          activeColor: activeColor,
-          onChanged: onChanged,
-          min: 0,
-          max: 255,
-          divisions: 255,
+        SizedBox(
+          width: 350, // Ajusta el ancho del slider
+          height: 40, // Ajusta la altura del slider
+          child: Slider(
+            value: value,
+            activeColor: activeColor,
+            onChanged: onChanged,
+            min: 0,
+            max: 255,
+            divisions: 255,
+          ),
         ),
       ],
     );
