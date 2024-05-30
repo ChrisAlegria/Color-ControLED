@@ -237,11 +237,13 @@ class _DevicesScreenState extends State<DevicesScreen> {
         ? const Center(child: CircularProgressIndicator())
         : SingleChildScrollView(
             child: Container(
-              color: Colors.grey.shade100,
+              color: Colors.white, // Cambiar el color de fondo a blanco
               child: Column(
                 children: [
                   if (_showDevices)
                     ..._devices.map((device) => ListTile(
+                          tileColor: Colors
+                              .white, // Cambiar el color de fondo a blanco
                           title: Text(device.name ?? device.address),
                           trailing: TextButton(
                             child: const Text('Conectar'),
@@ -267,6 +269,8 @@ class _DevicesScreenState extends State<DevicesScreen> {
                         )),
                   if (_showScanResults)
                     ..._scanResults.map((result) => ListTile(
+                          tileColor: Colors
+                              .white, // Cambiar el color de fondo a blanco
                           title: Text(result.device.name.isNotEmpty
                               ? result.device.name
                               : "Unknown Device"),
