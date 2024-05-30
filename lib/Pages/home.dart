@@ -3,8 +3,9 @@ import 'package:flutter_blue/flutter_blue.dart' as fb_blue;
 import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart'
     as fb_serial;
 import 'package:color_control_led/Pages/color_picker_screen.dart';
+import 'package:provider/provider.dart'; // Asegúrate de importar Provider
 import 'package:color_control_led/Pages/devices_screen.dart';
-import 'package:color_control_led/Connections/bluetooth_connection_manager.dart';
+import 'package:color_control_led/Connections/bluetooth_connection.dart';
 
 class BluetoothConnectionProvider extends StatefulWidget {
   final Widget child;
@@ -24,19 +25,8 @@ class _BluetoothConnectionProviderState
 
   @override
   Widget build(BuildContext context) {
-    return BluetoothConnectionManager(
-      device: _device,
-      connection: _connection,
-      onDeviceChanged: (device) {
-        setState(() {
-          _device = device;
-        });
-      },
-      onConnectionChanged: (connection) {
-        setState(() {
-          _connection = connection;
-        });
-      },
+    return ChangeNotifierProvider(
+      create: (_) => BluetoothConection(), // Crear el provider aquí
       child: widget.child,
     );
   }
@@ -68,8 +58,6 @@ class _MainPageState extends State<MainPage> {
 
   @override
   Widget build(BuildContext context) {
-    final bluetoothManager = BluetoothConnectionManager.of(context);
-
     return Scaffold(
       appBar: AppBar(
         title: const Text('Color ControLED'),

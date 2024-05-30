@@ -3,7 +3,7 @@ import 'package:flutter_blue/flutter_blue.dart' as fb_blue;
 import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart'
     as fb_serial;
 import 'package:permission_handler/permission_handler.dart';
-import '../Connections/bluetooth_connection_manager.dart';
+import '../Connections/bluetooth_connection.dart';
 import 'package:color_control_led/widgets/action_button.dart';
 import 'dart:convert';
 

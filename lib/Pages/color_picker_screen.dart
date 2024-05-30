@@ -41,10 +41,6 @@ class _ColorPickerScreenState extends State<ColorPickerScreen> {
   String _connectionStatusMessage = 'No hay dispositivos conectados';
 
   void connectToDevice() {
-    // Implementa la lógica de conexión Bluetooth aquí
-    // Escanea los dispositivos disponibles y conecta al deseado
-    // Configura las características para la comunicación
-    // Actualiza el mensaje de estado de la conexión
     setState(() {
       _connectionStatusMessage =
           'Conectado a: DispositivoX'; // Actualiza con el nombre del dispositivo conectado
@@ -53,12 +49,8 @@ class _ColorPickerScreenState extends State<ColorPickerScreen> {
 
   bool sendColorToArduino(Color color) {
     try {
-      // Convierte el color a valores RGB y envía los valores al Arduino mediante Bluetooth
-      // Implementa tu protocolo de comunicación específico
-      // Supongamos que esta función devuelve true si el envío fue exitoso y false en caso de error
       return true;
     } catch (e) {
-      // Manejo de errores
       return false;
     }
   }
@@ -76,7 +68,6 @@ class _ColorPickerScreenState extends State<ColorPickerScreen> {
     if (color == Colors.red) return "Rojo";
     if (color == Colors.green) return "Verde";
     if (color == Colors.blue) return "Azul";
-    // Agrega más colores si es necesario
     return "personalizado";
   }
 
@@ -241,7 +232,10 @@ class ColorSlider extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Text(label),
+        Text(
+          label,
+          style: const TextStyle(fontSize: 20.0),
+        ),
         Slider(
           value: value,
           activeColor: activeColor,
