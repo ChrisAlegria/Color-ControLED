@@ -40,6 +40,7 @@ class MainPage extends StatefulWidget {
 }
 
 class _MainPageState extends State<MainPage> {
+  int _selectedIndex = 0;
   bool isBluetoothOn = false;
 
   @override
@@ -56,8 +57,26 @@ class _MainPageState extends State<MainPage> {
     });
   }
 
-  @override
-  Widget build(BuildContext context) {
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+  }
+
+  Widget _buildBody() {
+    switch (_selectedIndex) {
+      case 0:
+        return _buildHome();
+      case 1:
+        return const ColorPickerScreen();
+      case 2:
+        return const DevicesScreen();
+      default:
+        return Container();
+    }
+  }
+
+  Widget _buildHome() {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Color ControLED'),
@@ -82,33 +101,34 @@ class _MainPageState extends State<MainPage> {
                 textAlign: TextAlign.center,
               ),
             ),
-            const SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: isBluetoothOn
-                  ? () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => const ColorPickerScreen()),
-                      );
-                    }
-                  : null,
-              child: const Text('Seleccionar Color'),
-            ),
-            const SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) =>
-                          const DevicesScreen()), // Navega a DevicesScreen
-                );
-              },
-              child: const Text('Conectar Bluetooth'),
-            ),
           ],
         ),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: _buildBody(),
+      bottomNavigationBar: BottomNavigationBar(
+        items: const <BottomNavigationBarItem>[
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home),
+            label: 'Inicio',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.color_lens),
+            label: 'Selector',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.bluetooth),
+            label: 'Conexión',
+          ),
+        ],
+        currentIndex: _selectedIndex,
+        selectedItemColor: Colors.blue,
+        onTap: _onItemTapped,
       ),
     );
   }

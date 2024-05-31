@@ -107,13 +107,6 @@ class _DevicesScreenState extends State<DevicesScreen> {
       appBar: AppBar(
         centerTitle: true,
         title: const Text('Conexión Bluetooth'),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () {
-            Navigator.pop(context,
-                {'device': _deviceConnected, 'connection': _connection});
-          },
-        ),
       ),
       body: Column(
         children: [
@@ -146,7 +139,7 @@ class _DevicesScreenState extends State<DevicesScreen> {
                   ? _listDevices()
                   : const SizedBox.shrink(),
             ),
-            _buttons(BluetoothConection())
+            _buttons(BluetoothConection()),
           ],
         ],
       ),
