@@ -132,7 +132,7 @@ class _DevicesScreenState extends State<DevicesScreen> {
                     const SizedBox(height: 16.0),
                     Text(
                       'El Bluetooth se encuentra ${_bluetoothState ? 'habilitado' : 'deshabilitado'}.',
-                      style: const TextStyle(fontSize: 18.0),
+                      style: const TextStyle(fontSize: 14.0),
                     ),
                   ],
                 ),
