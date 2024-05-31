@@ -235,72 +235,87 @@ class _DevicesScreenState extends State<DevicesScreen> {
   Widget _listDevices() {
     return _isConnecting
         ? const Center(child: CircularProgressIndicator())
-        : SingleChildScrollView(
-            child: Container(
-              color: Colors.white, // Cambiar el color de fondo a blanco
+        : Container(
+            color: Colors.grey.shade100, // Color de fondo de toda la lista
+            child: SingleChildScrollView(
               child: Column(
                 children: [
                   if (_showDevices)
-                    ..._devices.map((device) => ListTile(
-                          tileColor: Colors
-                              .white, // Cambiar el color de fondo a blanco
-                          title: Text(device.name ?? device.address),
-                          trailing: TextButton(
-                            child: const Text('Conectar'),
-                            onPressed: _bluetoothState
-                                ? () async {
-                                    setState(() => _isConnecting = true);
+                    Container(
+                      color: Colors
+                          .white, // Color de fondo de la sección de dispositivos
+                      child: Column(
+                        children: _devices
+                            .map((device) => ListTile(
+                                  title: Text(device.name ?? device.address),
+                                  trailing: TextButton(
+                                    child: const Text('Conectar'),
+                                    onPressed: _bluetoothState
+                                        ? () async {
+                                            setState(
+                                                () => _isConnecting = true);
 
-                                    _connection =
-                                        await fb_serial.BluetoothConnection
-                                            .toAddress(device.address);
-                                    _deviceConnected = device;
-                                    setState(() {
-                                      _scanResults = [];
-                                      _isConnecting = false;
-                                      _showScanResults = false;
-                                    });
-                                    _receiveData();
-                                    _showConnectedSnackBar(
-                                        device.name ?? device.address);
-                                  }
-                                : null,
-                          ),
-                        )),
+                                            _connection = await fb_serial
+                                                    .BluetoothConnection
+                                                .toAddress(device.address);
+                                            _deviceConnected = device;
+                                            setState(() {
+                                              _scanResults = [];
+                                              _isConnecting = false;
+                                              _showScanResults = false;
+                                            });
+                                            _receiveData();
+                                            _showConnectedSnackBar(
+                                                device.name ?? device.address);
+                                          }
+                                        : null,
+                                  ),
+                                ))
+                            .toList(),
+                      ),
+                    ),
                   if (_showScanResults)
-                    ..._scanResults.map((result) => ListTile(
-                          tileColor: Colors
-                              .white, // Cambiar el color de fondo a blanco
-                          title: Text(result.device.name.isNotEmpty
-                              ? result.device.name
-                              : "Unknown Device"),
-                          subtitle: Text(result.device.id.toString()),
-                          trailing: TextButton(
-                            child: const Text('Conectar'),
-                            onPressed: _bluetoothState
-                                ? () async {
-                                    setState(() => _isConnecting = true);
+                    Container(
+                      color: Colors
+                          .white, // Color de fondo de la sección de resultados de escaneo
+                      child: Column(
+                        children: _scanResults
+                            .map((result) => ListTile(
+                                  title: Text(result.device.name.isNotEmpty
+                                      ? result.device.name
+                                      : "Unknown Device"),
+                                  subtitle: Text(result.device.id.toString()),
+                                  trailing: TextButton(
+                                    child: const Text('Conectar'),
+                                    onPressed: _bluetoothState
+                                        ? () async {
+                                            setState(
+                                                () => _isConnecting = true);
 
-                                    _connection = await fb_serial
-                                            .BluetoothConnection
-                                        .toAddress(result.device.id.toString());
-                                    _deviceConnected = result.device
-                                        as fb_serial.BluetoothDevice;
-                                    setState(() {
-                                      _scanResults = [];
-                                      _isConnecting = false;
-                                      _showScanResults = false;
-                                    });
+                                            _connection = await fb_serial
+                                                    .BluetoothConnection
+                                                .toAddress(result.device.id
+                                                    .toString());
+                                            _deviceConnected = result.device
+                                                as fb_serial.BluetoothDevice;
+                                            setState(() {
+                                              _scanResults = [];
+                                              _isConnecting = false;
+                                              _showScanResults = false;
+                                            });
 
-                                    _receiveData();
-                                    Navigator.pop(context, {
-                                      'device': _deviceConnected,
-                                      'connection': _connection
-                                    });
-                                  }
-                                : null,
-                          ),
-                        )),
+                                            _receiveData();
+                                            Navigator.pop(context, {
+                                              'device': _deviceConnected,
+                                              'connection': _connection
+                                            });
+                                          }
+                                        : null,
+                                  ),
+                                ))
+                            .toList(),
+                      ),
+                    ),
                 ],
               ),
             ),
