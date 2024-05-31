@@ -119,96 +119,100 @@ class _ColorPickerScreenState extends State<ColorPickerScreen> {
           ),
         ),
       ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            CircleColorPicker(
-              controller: _controller,
-              onChanged: (color) {
-                setState(() {
-                  selectedColor = color;
-                  redValue = color.red.toDouble();
-                  greenValue = color.green.toDouble();
-                  blueValue = color.blue.toDouble();
-                });
-              },
-            ),
-            const SizedBox(height: 20),
-            Column(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                ColorSlider(
-                  label: 'Red',
-                  value: redValue,
-                  activeColor: Colors.red,
-                  onChanged: (value) {
-                    setState(() {
-                      redValue = value;
-                      updateSelectedColor();
-                    });
-                  },
-                ),
-                ColorSlider(
-                  label: 'Green',
-                  value: greenValue,
-                  activeColor: Colors.green,
-                  onChanged: (value) {
-                    setState(() {
-                      greenValue = value;
-                      updateSelectedColor();
-                    });
-                  },
-                ),
-                ColorSlider(
-                  label: 'Blue',
-                  value: blueValue,
-                  activeColor: Colors.blue,
-                  onChanged: (value) {
-                    setState(() {
-                      blueValue = value;
-                      updateSelectedColor();
-                    });
-                  },
-                ),
-              ],
-            ),
-            const SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () {
-                connectToDevice();
-                bool success = sendColorToArduino(selectedColor);
-
-                if (success) {
-                  String colorName = getColorName(selectedColor);
-                  String colorHex =
-                      '#${selectedColor.value.toRadixString(16).substring(2).toUpperCase()}';
-                  showMessageDialog(
-                    context,
-                    "Color Enviado",
-                    "El color seleccionado es $colorHex  y se está reproduciendo en el LED en este momento.",
-                  );
-                } else {
-                  showMessageDialog(context, "Error",
-                      "Error: No se ha podido encender el LED.");
-                }
-              },
-              child: const Text('Enviar color al Arduino'),
-            ),
-          ],
-        ),
-      ),
-      bottomSheet: SizedBox(
-        height: 50,
-        child: Container(
-          color: Colors.grey[300],
-          child: Center(
-            child: Text(
-              _connectionStatusMessage,
-              style: const TextStyle(fontSize: 16),
+      body: Column(
+        children: [
+          Container(
+            color: Colors.grey[300],
+            padding: const EdgeInsets.all(8.0),
+            child: Center(
+              child: Text(
+                _connectionStatusMessage,
+                style: const TextStyle(fontSize: 16),
+              ),
             ),
           ),
-        ),
+          Expanded(
+            child: Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  CircleColorPicker(
+                    controller: _controller,
+                    onChanged: (color) {
+                      setState(() {
+                        selectedColor = color;
+                        redValue = color.red.toDouble();
+                        greenValue = color.green.toDouble();
+                        blueValue = color.blue.toDouble();
+                      });
+                    },
+                  ),
+                  const SizedBox(height: 20),
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      ColorSlider(
+                        label: 'Red',
+                        value: redValue,
+                        activeColor: Colors.red,
+                        onChanged: (value) {
+                          setState(() {
+                            redValue = value;
+                            updateSelectedColor();
+                          });
+                        },
+                      ),
+                      ColorSlider(
+                        label: 'Green',
+                        value: greenValue,
+                        activeColor: Colors.green,
+                        onChanged: (value) {
+                          setState(() {
+                            greenValue = value;
+                            updateSelectedColor();
+                          });
+                        },
+                      ),
+                      ColorSlider(
+                        label: 'Blue',
+                        value: blueValue,
+                        activeColor: Colors.blue,
+                        onChanged: (value) {
+                          setState(() {
+                            blueValue = value;
+                            updateSelectedColor();
+                          });
+                        },
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 20),
+                  ElevatedButton(
+                    onPressed: () {
+                      connectToDevice();
+                      bool success = sendColorToArduino(selectedColor);
+
+                      if (success) {
+                        String colorName = getColorName(selectedColor);
+                        String colorHex =
+                            '#${selectedColor.value.toRadixString(16).substring(2).toUpperCase()}';
+                        showMessageDialog(
+                          context,
+                          "Color Enviado",
+                          "El color seleccionado es $colorHex y se está reproduciendo en el LED en este momento.",
+                        );
+                      } else {
+                        showMessageDialog(context, "Error",
+                            "Error: No se ha podido encender el LED.");
+                      }
+                    },
+                    child: const Text('Enviar color al Arduino'),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
