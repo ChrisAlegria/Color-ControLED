@@ -115,7 +115,7 @@ class _ColorPickerScreenState extends State<ColorPickerScreen> {
         title: const Center(
           child: Text(
             'Color ControLED',
-            style: TextStyle(fontSize: 18),
+            style: TextStyle(fontSize: 20),
           ),
         ),
       ),

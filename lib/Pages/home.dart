@@ -79,7 +79,12 @@ class _MainPageState extends State<MainPage> {
   Widget _buildHome() {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Color ControLED'),
+        title: const Center(
+          child: Text(
+            'Color ControLED',
+            style: TextStyle(fontSize: 20),
+          ),
+        ),
       ),
       body: Center(
         child: Column(

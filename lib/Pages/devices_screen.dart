@@ -105,8 +105,12 @@ class _DevicesScreenState extends State<DevicesScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        centerTitle: true,
-        title: const Text('Conexión Bluetooth'),
+        title: const Center(
+          child: Text(
+            'Color ControLED',
+            style: TextStyle(fontSize: 20),
+          ),
+        ),
       ),
       body: Column(
         children: [
@@ -152,8 +156,12 @@ class _DevicesScreenState extends State<DevicesScreen> {
       onChanged: (bool value) async {
         if (value) {
           await _bluetooth.requestEnable();
+          setState(() =>
+              _bluetoothState = true); // Actualiza el estado inmediatamente
         } else {
           await _bluetooth.requestDisable();
+          setState(() =>
+              _bluetoothState = false); // Actualiza el estado inmediatamente
         }
       },
       tileColor: Colors.black26,
