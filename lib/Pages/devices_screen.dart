@@ -325,14 +325,14 @@ class _DevicesScreenState extends State<DevicesScreen> {
 
   Widget _buttons(BluetoothConection bluetoothConnection) {
     bool _isOn = false;
-    Color _buttonColor = Colors.red;
-    String _buttonText = 'OFF';
+    Color _buttonColor = Colors.green; // Cambiado a verde
+    String _buttonText = 'ON';
 
     void _toggleState() {
       setState(() {
         _isOn = !_isOn;
-        _buttonColor = _isOn ? Colors.blue : Colors.red;
-        _buttonText = _isOn ? 'ON' : 'OFF';
+        _buttonColor = _isOn ? Colors.blue : Colors.green;
+        _buttonText = _isOn ? 'OFF' : 'ON';
         // Envía el comando correspondiente al estado del botón
         if (_isOn) {
           bluetoothConnection
